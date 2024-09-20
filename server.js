@@ -10,10 +10,10 @@ app.use(express.json());
 
 // Conexión a la base de datos MySQL
 const db = mysql.createConnection({
-  host: '172.17.230.165',
-  user: 'remote_user',
-  password: 'remote_password',
-  database: 'sistema_usuarios',
+  host: process.env.MYSQL_HOST,
+  user: process.env.MYSQL_USER,
+  password: process.env.MYSQL_PASSWORD,
+  database: process.env.MYSQL_DATABASE
 });
 
 db.connect((err) => {
