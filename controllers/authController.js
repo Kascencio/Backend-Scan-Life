@@ -3,12 +3,11 @@ const jwt = require('jsonwebtoken');
 const mysql = require('mysql2');
 
 const db = mysql.createConnection({
-  host: '172.17.230.165',
-  user: 'remote_user',
-  password: 'remote_password',
-  database: 'sistema_usuarios',
+  host: process.env.MYSQL_HOST,
+  user: process.env.MYSQL_USER,
+  password: process.env.MYSQL_PASSWORD,
+  database: process.env.MYSQL_DATABASE
 });
-
 exports.register = (req, res) => {
   const { nombre, apellido, email, password } = req.body;
   const hashedPassword = bcrypt.hashSync(password, 10);
