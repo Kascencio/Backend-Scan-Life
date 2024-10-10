@@ -1,39 +1,37 @@
 const express = require('express');
 const cors = require('cors');
-const mysql = require('mysql2');
-const contactosRoutes = require('./routes/contactos');
-const app = express();
+const { Pool } = require('pg');
+const authRoutes = require('./routes/auth'); // Asegúrate de que la ruta sea correcta
+require('dotenv').config();
 
-// Middlewares
+const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Conexión a la base de datos MySQL
-const db = mysql.createConnection({
-  host: process.env.MYSQL_HOST,
-  user: process.env.MYSQL_USER,
-  password: process.env.MYSQL_PASSWORD,
-  database: process.env.MYSQL_DATABASE,
-  connectTimeout: 10000
+// Configuración de la conexión a PostgreSQL
+const pool = new Pool({
+  host: 'dpg-crmhlo5umphs739eh5dg-a.oregon-postgres.render.com',
+  user: 'sistema_usuarios_user',
+  password: 'T2UIdTJCBbNrkNPpihVDJ9TMDu8Y82Ms',
+  database: 'sistema_usuarios',
+  port: 5432,
+  ssl: { rejectUnauthorized: false }  // Configuración de SSL
 });
 
-db.connect((err) => {
+// Verificar la conexión
+pool.connect((err, client, release) => {
   if (err) {
-    console.error('Error conectando a MySQL:', err);
-    return;
+    console.error('Error al conectar a PostgreSQL:', err);
+  } else {
+    console.log('Conectado a PostgreSQL');
+    release();
   }
-  console.log('Conexión a MySQL exitosa');
 });
 
-// Rutas
-const authRoutes = require('./routes/auth');
-const qrRoutes = require('./routes/qr');
-app.use('/api/auth', authRoutes);
-app.use('/api/qr', qrRoutes);
-app.use('/api/contactos', contactosRoutes);
+// Usa el router para las rutas de autenticación
+app.use('/api/auth', authRoutes); // Aquí es donde se define la ruta base
 
-// Iniciar el servidor
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-  console.log(`Servidor corriendo en el puerto ${PORT}`);
+const port = process.env.PORT || 3001;
+app.listen(port, () => {
+  console.log(`Servidor corriendo en el puerto ${port}`);
 });
